@@ -28,7 +28,22 @@ async function main() {
     console.log(`  - ${t.tablename}`);
   }
 
-  // Count system item types
+  // Demo user
+  const user = await prisma.user.findUnique({
+    where: { email: "demo@devstash.io" },
+  });
+  console.log(`\nDemo user:`);
+  if (user) {
+    console.log(`  Name: ${user.name}`);
+    console.log(`  Email: ${user.email}`);
+    console.log(`  isPro: ${user.isPro}`);
+    console.log(`  emailVerified: ${user.emailVerified}`);
+    console.log(`  hasPassword: ${!!user.password}`);
+  } else {
+    console.log("  ✗ Not found — run `npx prisma db seed` first");
+  }
+
+  // System item types
   const itemTypes = await prisma.itemType.findMany({
     where: { isSystem: true },
     orderBy: { name: "asc" },
@@ -38,18 +53,45 @@ async function main() {
     console.log(`  - ${type.name} (${type.icon}, ${type.color})`);
   }
 
-  // Count records per table
-  const [users, items, collections, tags] = await Promise.all([
+  // Collections with item counts
+  const collections = await prisma.collection.findMany({
+    where: { userId: user?.id },
+    include: {
+      items: {
+        include: {
+          item: {
+            include: { type: true },
+          },
+        },
+      },
+    },
+    orderBy: { name: "asc" },
+  });
+  console.log(`\nCollections (${collections.length}):`);
+  for (const col of collections) {
+    console.log(`\n  📁 ${col.name} — ${col.description}`);
+    for (const ic of col.items) {
+      const item = ic.item;
+      const preview = item.content
+        ? item.content.substring(0, 60).replace(/\n/g, " ") + "..."
+        : item.url ?? "(no content)";
+      console.log(`    - [${item.type.name}] ${item.title}`);
+      console.log(`      ${preview}`);
+    }
+  }
+
+  // Record counts
+  const [userCount, itemCount, collectionCount, tagCount] = await Promise.all([
     prisma.user.count(),
     prisma.item.count(),
     prisma.collection.count(),
     prisma.tag.count(),
   ]);
   console.log(`\nRecord counts:`);
-  console.log(`  Users: ${users}`);
-  console.log(`  Items: ${items}`);
-  console.log(`  Collections: ${collections}`);
-  console.log(`  Tags: ${tags}`);
+  console.log(`  Users: ${userCount}`);
+  console.log(`  Items: ${itemCount}`);
+  console.log(`  Collections: ${collectionCount}`);
+  console.log(`  Tags: ${tagCount}`);
 
   console.log("\n✓ All tests passed.");
 }
