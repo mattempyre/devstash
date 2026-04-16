@@ -1,7 +1,21 @@
+import { StatsCards } from "@/components/dashboard/StatsCards";
+import { CollectionsGrid } from "@/components/dashboard/CollectionsGrid";
+import { PinnedItems } from "@/components/dashboard/PinnedItems";
+import { RecentItems } from "@/components/dashboard/RecentItems";
+
 export default function DashboardPage() {
   return (
-    <div>
-      <h2 className="text-lg font-semibold">Main</h2>
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-2xl font-bold">Dashboard</h1>
+        <p className="mt-1 text-muted-foreground">
+          Your developer knowledge hub
+        </p>
+      </div>
+      <StatsCards />
+      <CollectionsGrid />
+      <PinnedItems />
+      <RecentItems />
     </div>
   );
 }

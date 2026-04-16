@@ -2,16 +2,10 @@
 
 import Link from "next/link";
 import {
-  Code,
-  Sparkles,
-  Terminal,
-  FileText,
-  File,
-  Image,
-  Link as LinkIcon,
   ChevronDown,
   Star,
   Folder,
+  File,
   Settings,
 } from "lucide-react";
 import {
@@ -29,16 +23,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { itemTypes, itemTypeCounts, collections, currentUser } from "@/lib/mock-data";
-
-const iconMap: Record<string, React.ComponentType<React.SVGProps<SVGSVGElement>>> = {
-  Code,
-  Sparkles,
-  Terminal,
-  FileText,
-  File,
-  Image,
-  Link: LinkIcon,
-};
+import { iconMap } from "@/lib/icon-map";
 
 export function AppSidebar() {
   const favoriteCollections = collections.filter((c) => c.isFavorite);
