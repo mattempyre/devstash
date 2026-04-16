@@ -31,6 +31,14 @@ export type DashboardStats = {
   favoriteCollections: number;
 };
 
+export type SystemItemTypeWithCount = {
+  id: string;
+  name: string;
+  icon: string | null;
+  color: string | null;
+  count: number;
+};
+
 /**
  * Fetch the user's pinned items, newest first, with item-type metadata
  * and flattened tag names for rendering.
@@ -108,4 +116,60 @@ export async function getDashboardStats(
     favoriteItems,
     favoriteCollections,
   };
+}
+
+/**
+ * Fetch all system item types along with the number of items the user has
+ * of each type. Used to power the sidebar type list.
+ *
+ * Types are returned in a stable order matching the seed ordering (snippet,
+ * prompt, command, note, file, image, link) when possible, falling back to
+ * alphabetical for any unknown types.
+ */
+const SYSTEM_TYPE_ORDER = [
+  "snippet",
+  "prompt",
+  "command",
+  "note",
+  "file",
+  "image",
+  "link",
+];
+
+export async function getSystemItemTypesWithCounts(
+  userId: string,
+): Promise<SystemItemTypeWithCount[]> {
+  const [types, counts] = await Promise.all([
+    prisma.itemType.findMany({ where: { isSystem: true } }),
+    prisma.item.groupBy({
+      by: ["typeId"],
+      where: { userId },
+      _count: { _all: true },
+    }),
+  ]);
+
+  const countMap = new Map<string, number>();
+  for (const row of counts) {
+    countMap.set(row.typeId, row._count._all);
+  }
+
+  const indexFor = (name: string) => {
+    const i = SYSTEM_TYPE_ORDER.indexOf(name);
+    return i === -1 ? SYSTEM_TYPE_ORDER.length : i;
+  };
+
+  return types
+    .map((t) => ({
+      id: t.id,
+      name: t.name,
+      icon: t.icon,
+      color: t.color,
+      count: countMap.get(t.id) ?? 0,
+    }))
+    .sort((a, b) => {
+      const ia = indexFor(a.name);
+      const ib = indexFor(b.name);
+      if (ia !== ib) return ia - ib;
+      return a.name.localeCompare(b.name);
+    });
 }
