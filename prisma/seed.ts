@@ -35,6 +35,8 @@ const collections = [
         title: "useDebounce Hook",
         type: "snippet",
         language: "typescript",
+        isPinned: true,
+        isFavorite: true,
         content: `import { useEffect, useState } from "react";
 
 export function useDebounce<T>(value: T, delay: number): T {
@@ -145,6 +147,8 @@ export function useLocalStorage<T>(
       {
         title: "Code Review Prompt",
         type: "prompt",
+        isPinned: true,
+        isFavorite: true,
         content: `Review the following code for:
 
 1. **Bugs & Logic Errors** — race conditions, off-by-one, null derefs
@@ -278,6 +282,7 @@ echo "=== Deploy complete ==="`,
       {
         title: "Git Interactive Rebase & Cleanup",
         type: "command",
+        isPinned: true,
         content: `# Interactive rebase last N commits
 git rebase -i HEAD~5
 
@@ -359,6 +364,8 @@ npx --yes <package_name>@latest`,
       {
         title: "Tailwind CSS Documentation",
         type: "link",
+        isPinned: true,
+        isFavorite: true,
         url: "https://tailwindcss.com/docs",
         description: "Official Tailwind CSS docs — utility classes, configuration, responsive design, dark mode, and plugin authoring.",
       },
@@ -470,6 +477,8 @@ async function main() {
           url: "url" in item ? item.url : undefined,
           description: "description" in item ? item.description : undefined,
           language: "language" in item ? item.language : undefined,
+          isPinned: "isPinned" in item ? item.isPinned : false,
+          isFavorite: "isFavorite" in item ? item.isFavorite : false,
           userId: user.id,
           typeId,
         },

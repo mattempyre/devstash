@@ -17,6 +17,35 @@ vi.mock("@/lib/db/collections", () => ({
   ]),
 }));
 
+vi.mock("@/lib/db/items", () => ({
+  getPinnedItems: vi.fn().mockResolvedValue([
+    {
+      id: "i1",
+      title: "useAuth Hook",
+      description: "Custom authentication hook",
+      isFavorite: true,
+      createdAt: new Date("2025-01-15"),
+      tags: ["react"],
+      type: { name: "snippet", icon: "Code", color: "#3b82f6" },
+    },
+  ]),
+  getRecentItems: vi.fn().mockResolvedValue([
+    {
+      id: "i1",
+      title: "useAuth Hook",
+      language: "typescript",
+      createdAt: new Date("2025-01-15"),
+      type: { name: "snippet", icon: "Code", color: "#3b82f6" },
+    },
+  ]),
+  getDashboardStats: vi.fn().mockResolvedValue({
+    totalItems: 10,
+    collectionsCount: 1,
+    favoriteItems: 1,
+    favoriteCollections: 1,
+  }),
+}));
+
 describe("DashboardPage", () => {
   it("renders dashboard heading", async () => {
     const Page = await DashboardPage();

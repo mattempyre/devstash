@@ -1,18 +1,14 @@
 import { Clock, File } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { items, itemTypes } from "@/lib/mock-data";
 import { iconMap } from "@/lib/icon-map";
-
-const recentItems = [...items]
-  .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-  .slice(0, 10);
+import type { RecentItem } from "@/lib/db/items";
 
 function formatDate(date: Date) {
   return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
-export function RecentItems() {
-  if (recentItems.length === 0) return null;
+export function RecentItems({ items }: { items: RecentItem[] }) {
+  if (items.length === 0) return null;
 
   return (
     <section>
@@ -21,10 +17,9 @@ export function RecentItems() {
         <h3 className="text-lg font-semibold">Recent</h3>
       </div>
       <div className="space-y-1">
-        {recentItems.map((item) => {
-          const type = itemTypes.find((t) => t.id === item.typeId);
-          const Icon = type ? (iconMap[type.icon] ?? File) : File;
-          const color = type?.color ?? "#888";
+        {items.map((item) => {
+          const Icon = (item.type.icon && iconMap[item.type.icon]) || File;
+          const color = item.type.color ?? "#888";
 
           return (
             <div

@@ -1,16 +1,37 @@
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { RecentItems } from "./RecentItems";
+import type { RecentItem } from "@/lib/db/items";
+
+const snippetType = { name: "snippet", icon: "Code", color: "#3b82f6" };
+const promptType = { name: "prompt", icon: "Sparkles", color: "#8b5cf6" };
+const commandType = { name: "command", icon: "Terminal", color: "#f97316" };
+const noteType = { name: "note", icon: "StickyNote", color: "#fde047" };
+const fileType = { name: "file", icon: "File", color: "#6b7280" };
+const linkType = { name: "link", icon: "Link", color: "#10b981" };
+
+const mockRecent: RecentItem[] = [
+  { id: "i8", title: "Tailwind Breakpoints Reference", language: null, createdAt: new Date("2025-03-08"), type: linkType },
+  { id: "i7", title: "Meeting Notes Template", language: "markdown", createdAt: new Date("2025-03-05"), type: noteType },
+  { id: "i9", title: "System Design Interview Notes", language: "markdown", createdAt: new Date("2025-03-02"), type: noteType },
+  { id: "i6", title: "Docker Compose Cheatsheet", language: "bash", createdAt: new Date("2025-03-01"), type: commandType },
+  { id: "i4", title: "Code Review Prompt", language: null, createdAt: new Date("2025-02-20"), type: promptType },
+  { id: "i5", title: "Python List Comprehension Patterns", language: "python", createdAt: new Date("2025-02-15"), type: snippetType },
+  { id: "i3", title: "Git Rebase Workflow", language: "bash", createdAt: new Date("2025-02-10"), type: commandType },
+  { id: "i10", title: "Project Context Template", language: null, createdAt: new Date("2025-01-22"), type: fileType },
+  { id: "i1", title: "useAuth Hook", language: "typescript", createdAt: new Date("2025-01-15"), type: snippetType },
+  { id: "i2", title: "API Error Handling Pattern", language: "typescript", createdAt: new Date("2025-01-12"), type: snippetType },
+];
 
 describe("RecentItems", () => {
   it("renders section heading", () => {
-    render(<RecentItems />);
+    render(<RecentItems items={mockRecent} />);
 
     expect(screen.getByRole("heading", { name: "Recent" })).toBeInTheDocument();
   });
 
   it("renders all 10 items", () => {
-    render(<RecentItems />);
+    render(<RecentItems items={mockRecent} />);
 
     expect(screen.getByText("Tailwind Breakpoints Reference")).toBeInTheDocument();
     expect(screen.getByText("Meeting Notes Template")).toBeInTheDocument();
@@ -25,25 +46,26 @@ describe("RecentItems", () => {
   });
 
   it("shows language badges where applicable", () => {
-    render(<RecentItems />);
+    render(<RecentItems items={mockRecent} />);
 
-    // "typescript" appears for 2 items (useAuth Hook + API Error Handling)
     expect(screen.getAllByText("typescript")).toHaveLength(2);
-    // "bash" appears for 2 items (Git Rebase + Docker Compose)
     expect(screen.getAllByText("bash")).toHaveLength(2);
     expect(screen.getByText("python")).toBeInTheDocument();
-    // "markdown" appears for 2 items (Meeting Notes + System Design)
     expect(screen.getAllByText("markdown")).toHaveLength(2);
   });
 
-  it("items are sorted by date descending (most recent first)", () => {
-    render(<RecentItems />);
+  it("renders items in the order provided", () => {
+    render(<RecentItems items={mockRecent} />);
 
     const items = screen.getAllByText(/^(Jan|Feb|Mar) \d+$/);
     const dates = items.map((el) => el.textContent);
 
-    // First item should be Mar 8 (most recent), last should be Jan 12
     expect(dates[0]).toBe("Mar 8");
     expect(dates[dates.length - 1]).toBe("Jan 12");
+  });
+
+  it("renders nothing when there are no recent items", () => {
+    const { container } = render(<RecentItems items={[]} />);
+    expect(container).toBeEmptyDOMElement();
   });
 });
