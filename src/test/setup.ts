@@ -1,5 +1,6 @@
 import "@testing-library/jest-dom/vitest";
 import { cleanup } from "@testing-library/react";
+import { createElement } from "react";
 import { afterEach, vi } from "vitest";
 
 // Mock next/link — renders a plain <a> in jsdom
@@ -12,10 +13,7 @@ vi.mock("next/link", () => ({
     children: React.ReactNode;
     href: string;
     [key: string]: unknown;
-  }) => {
-    const { createElement } = require("react");
-    return createElement("a", { href, ...props }, children);
-  },
+  }) => createElement("a", { href, ...props }, children),
 }));
 
 afterEach(() => {
