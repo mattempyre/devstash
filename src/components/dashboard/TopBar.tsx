@@ -3,11 +3,14 @@
 import { Search, Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 
 export function TopBar() {
   return (
     <header className="grid h-16 grid-cols-[auto_1fr_auto] items-center border-b border-border px-4">
       <div className="flex items-center gap-2 pr-4">
+        {/* Mobile-only sidebar trigger */}
+        <SidebarTrigger className="md:hidden" />
         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground text-base font-bold">
           D
         </div>
