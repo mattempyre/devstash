@@ -45,3 +45,6 @@ next-env.d.ts
 # prisma generated client
 src/generated/prisma
 .gstack/
+
+# claude code local settings (personal, not shared)
+.claude/settings.local.json
